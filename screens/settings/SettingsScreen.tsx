@@ -4,10 +4,13 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import colours from "../../colours";
 import useAuth from "../../contexts/AuthContext";
 import CustomButton from "../../components/CustomButton";
+import ImagePicker from "../../components/ImagePicker";
+import useImagePicker from "../../hooks/useImagePicker";
 
 const SettingsScreen = () => {
-  const { user, logout, isLoading } = useAuth();
   const navigator = useNavigation();
+  const { user, logout, isLoading, updateProfile } = useAuth();
+  const { imageUrl, pickImage, imageBlob } = useImagePicker();
   const [displayName, setDisplayName] = useState(
     user?.user_metadata.display_name
   );
@@ -19,6 +22,9 @@ const SettingsScreen = () => {
     });
   });
 
+  const isSaveChangesButtonDisabled =
+    displayName === user?.user_metadata.display_name &&
+    imageUrl === user?.user_metadata.imageUrl;
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Your Profile</Text>
@@ -41,19 +47,21 @@ const SettingsScreen = () => {
         </View>
         <View style={styles.formItem}>
           <Text style={styles.text}>Display Image</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setDisplayName}
-            value={displayName}
-          />
+          <ImagePicker imageUrl={imageUrl} pickImage={pickImage} />
         </View>
-        <CustomButton title="Save Changes" colour="" />
+        <CustomButton
+          title="Save Changes"
+          disabled={isSaveChangesButtonDisabled}
+          pending={isLoading === "updateProfile"}
+          pendingMessage="Updating your profile..."
+          onClick={() => updateProfile(displayName, imageBlob, imageUrl)}
+        />
       </View>
       <CustomButton
         title="Logout"
         colour="red"
         onClick={logout}
-        pending={isLoading}
+        pending={isLoading === "logout"}
         pendingMessage="Logging out..."
       />
     </View>
@@ -92,7 +100,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colours.dark,
     height: 40,
-    color: colours.placeholderText,
+    color: colours.light,
     fontFamily: "geist",
+    opacity: 0.6,
   },
 });

@@ -52,7 +52,7 @@ const SignupScreen = () => {
       </View>
       <CustomButton
         title="Signup"
-        pending={isLoading}
+        pending={isLoading === "signup"}
         onClick={() => signup(email, password, confirmPassword, displayName)}
         pendingMessage="Signing up..."
       />

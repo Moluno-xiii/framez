@@ -14,3 +14,11 @@
 - Create post
 - Delete Post
 - Comment on a post
+
+## Screens
+
+- Auth (Login)
+- Auth (Signup)
+- Posts (Feed)
+- Posts (Add new post)
+- Settings

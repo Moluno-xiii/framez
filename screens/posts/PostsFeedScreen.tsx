@@ -9,7 +9,7 @@ import { PostsNavigationProp } from "../../navigation/PostsNavigator";
 import colours from "../../colours";
 
 const PostsFeedScreen = () => {
-  const { user, logout, isLoading } = useAuth();
+  const { logout, isLoading } = useAuth();
   const navigator = useNavigation<PostsNavigationProp>();
 
   useLayoutEffect(() => {
@@ -26,10 +26,13 @@ const PostsFeedScreen = () => {
       ),
     });
   });
-  console.log("user dat", user);
   return (
     <View style={styles.screen}>
-      <CustomButton title="Logout" onClick={logout} pending={isLoading} />
+      <CustomButton
+        title="Logout"
+        onClick={logout}
+        pending={isLoading === "logout"}
+      />
       <Text style={styles.text}>PostsFeedScreen</Text>
     </View>
   );

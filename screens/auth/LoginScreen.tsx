@@ -16,7 +16,7 @@ const LoginScreen = () => {
         <TextInput
           style={styles.textInput}
           textContentType="emailAddress"
-          placeholder="emaiil e.g : jack-inghof@gmail.com"
+          placeholder="email e.g : jack-inghof@gmail.com"
           placeholderTextColor={colours.placeholderText}
           onChangeText={setEmeil}
           value={email}
@@ -32,7 +32,7 @@ const LoginScreen = () => {
         />
         <CustomButton
           title="Login"
-          pending={isLoading}
+          pending={isLoading === "login"}
           pendingMessage="Logging in..."
           onClick={() => login(email, password)}
         />

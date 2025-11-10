@@ -8,14 +8,27 @@ import {
 const Icon = ({
   imgSrc,
   onClick,
+  uri,
+  isImage = false,
 }: {
-  imgSrc: ImageSourcePropType;
+  imgSrc?: ImageSourcePropType;
   onClick?: () => void;
+  uri?: string;
+  isImage?: boolean;
 }) => {
   return (
     <TouchableOpacity style={styles.screen} onPress={onClick}>
-      {/* <Image alt="icon image" source={imgSrc} style={styles.image} /> */}
-      <Image alt="icon image" source={imgSrc} height={24} width={24} />
+      {imgSrc ? (
+        <Image alt="icon image" source={imgSrc} height={24} width={24} />
+      ) : (
+        <Image
+          style={isImage && styles.imageStyle}
+          alt="icon image"
+          source={{ uri }}
+          height={24}
+          width={24}
+        />
+      )}
     </TouchableOpacity>
   );
 };
@@ -24,18 +37,7 @@ export default Icon;
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
+  imageStyle: {
+    borderRadius: 100,
+  },
 });
-
-// const styles = StyleSheet.create({
-//   container: {
-//     padding: 6,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     backgroundColor: "pink",
-//   },
-//   image: {
-//     width: 24,
-//     height: 24,
-//     resizeMode: "contain",
-//   },
-// });

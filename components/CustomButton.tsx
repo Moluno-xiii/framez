@@ -7,6 +7,7 @@ type CustomButtonProps = {
   pendingMessage?: string;
   onClick?: () => void;
   pending?: boolean;
+  disabled?: boolean;
   colour?: string;
 };
 
@@ -16,16 +17,17 @@ const CustomButton = ({
   pending,
   pendingMessage = "Loading...",
   colour,
+  disabled,
 }: CustomButtonProps) => {
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        pending && styles.disabled,
+        (pending || disabled) && styles.disabled,
         colour && { backgroundColor: colour },
       ]}
       onPress={onClick}
-      disabled={pending}
+      disabled={pending || disabled}
       activeOpacity={0.7}
     >
       <Text style={styles.text}>{pending ? pendingMessage : title}</Text>

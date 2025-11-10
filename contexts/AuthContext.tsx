@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { RootNavigatorParam } from "../navigation/RootNavigator";
 import { Alert } from "react-native";
 import { Session, User } from "@supabase/supabase-js";
+import { updateImage } from "../utils/supabaseStorageQueries";
 
 type AuthContextTypes = {
   user: User | null | undefined;
@@ -23,21 +24,34 @@ type AuthContextTypes = {
     name: string
   ) => void;
   logout: () => void;
-  isLoading: boolean;
+  isLoading: AuthLoadingStates;
+  updateProfile: (
+    display_name?: string,
+    imageBlob?: ArrayBuffer,
+    imageUrl?: string
+  ) => void;
 };
+
+type AuthLoadingStates =
+  | "login"
+  | "signup"
+  | "updateProfile"
+  | "onAppStart"
+  | "notLoading"
+  | "logout";
 
 const AuthContext = createContext<AuthContextTypes | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [session, setSession] = useState<Session | undefined | null>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<AuthLoadingStates>("notLoading");
   const navigation = useNavigation<RootNavigatorParam>();
 
   useEffect(() => {
     async function getUserSession() {
       try {
-        setIsLoading(true);
+        setIsLoading("onAppStart");
         const { data, error } = await supabase.auth.getSession();
 
         if (error) throw error;
@@ -51,7 +65,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error getting session");
         Alert.alert(message);
       } finally {
-        setIsLoading(false);
+        setIsLoading("notLoading");
       }
     }
 
@@ -60,7 +74,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login: AuthContextTypes["login"] = async (email, password) => {
     try {
-      setIsLoading(true);
+      setIsLoading("login");
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -75,7 +89,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         err instanceof Error ? err.message : "Unexpected error occured";
       Alert.alert(message);
     } finally {
-      setIsLoading(false);
+      setIsLoading("notLoading");
     }
   };
 
@@ -86,7 +100,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     name
   ) => {
     try {
-      setIsLoading(true);
+      setIsLoading("signup");
       if (!emailRegex.test(email)) {
         throw new Error("Invalid email");
       }
@@ -114,13 +128,13 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         err instanceof Error ? err.message : "Unexpected error occured";
       Alert.alert(message);
     } finally {
-      setIsLoading(false);
+      setIsLoading("notLoading");
     }
   };
 
   const logout = async () => {
     try {
-      setIsLoading(true);
+      setIsLoading("logout");
 
       const { error } = await supabase.auth.signOut();
 
@@ -137,11 +151,71 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
           : "Unexpected error occured, reload the page and try again";
       Alert.alert(message);
     } finally {
-      setIsLoading(false);
+      setIsLoading("notLoading");
     }
   };
 
-  const authReturnValues = { user, login, signup, logout, isLoading, session };
+  const updateProfile: AuthContextTypes["updateProfile"] = async (
+    display_name,
+    imageBlob,
+    imageUrl
+  ) => {
+    try {
+      setIsLoading("updateProfile");
+      let ImgData;
+      let publicImageUrl;
+
+      if (imageBlob && imageUrl) {
+        const imageExtension = imageUrl.split(".").pop();
+        const url = `private/${user?.id}-${Date.now()}.${imageExtension}`;
+
+        const { data, error: imageUploadError } = await updateImage(
+          url,
+          imageBlob
+        );
+        ImgData = data;
+        if (imageUploadError) {
+          throw imageUploadError;
+        }
+
+        if (data) {
+          const { data: publicUrlData } = await supabase.storage
+            .from("user_avatars")
+            .getPublicUrl(data.path);
+          publicImageUrl = publicUrlData.publicUrl;
+        }
+      }
+
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          display_name,
+          imageUrl: publicImageUrl,
+        },
+      });
+
+      if (error) throw error;
+      Alert.alert("Profile updated successfully");
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Unexpected error occured while trying to update your profile, please relaunch the app and try again.";
+      console.error("update profile errr", message);
+      Alert.alert(message);
+    } finally {
+      setIsLoading("notLoading");
+    }
+  };
+
+  const authReturnValues = {
+    user,
+    login,
+    signup,
+    logout,
+    isLoading,
+    session,
+    updateProfile,
+  };
   return (
     <AuthContext.Provider value={authReturnValues}>
       {children}
