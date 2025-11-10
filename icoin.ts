@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+import { IconNames } from "./types";
 
 const iconImages: Record<IconNames, ImageSourcePropType> = {
   fingerprint: require("./assets/fingerprint-icon.png"),
@@ -8,5 +9,4 @@ const iconImages: Record<IconNames, ImageSourcePropType> = {
   "add-circle": require("./assets/add-circle_icon.png"),
 };
 
-type IconNames = "fingerprint" | "signup" | "settings" | "posts" | "add-circle";
 export default iconImages;

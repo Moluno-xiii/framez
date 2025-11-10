@@ -62,7 +62,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
           err instanceof Error
             ? err.message
             : "Unexpeted error, reload your app and try again.";
-        console.error("Error getting session");
         Alert.alert(message);
       } finally {
         setIsLoading("notLoading");
@@ -200,7 +199,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         err instanceof Error
           ? err.message
           : "Unexpected error occured while trying to update your profile, please relaunch the app and try again.";
-      console.error("update profile errr", message);
       Alert.alert(message);
     } finally {
       setIsLoading("notLoading");

@@ -6,7 +6,7 @@ import { Alert } from "react-native";
 const useImagePicker = () => {
   const { user } = useAuth();
   const [imageBlob, setImageBlob] = useState<ArrayBuffer>();
-  const [imageUrl, setImageUrl] = useState(user?.user_metadata.imageUrl ?? "");
+  const [imageUrl, setImageUrl] = useState(user?.user_metadata.imageUrl);
 
   const urlToBlob = async (uri: string) => {
     const response = await fetch(uri);

@@ -1,14 +1,14 @@
 import supabase from "./supabase";
 
 const uploadImage = async (file: File, url: string) => {
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from("user_avatars")
     .upload(url, file, {
       contentType: "image/jpeg",
     });
 
   if (error) {
-    console.error("file upload error", error.message);
+    throw error;
   }
 };
 

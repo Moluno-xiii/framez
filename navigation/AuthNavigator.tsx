@@ -13,7 +13,6 @@ type AuthTabParamList = {
 };
 
 const Tab = createBottomTabNavigator<AuthTabParamList>();
-type PostsNavigationProp = NativeStackNavigationProp<AuthTabParamList>;
 
 function AuthNavigator() {
   return (

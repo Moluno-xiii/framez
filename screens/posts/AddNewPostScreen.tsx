@@ -1,11 +1,16 @@
 import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { PostsNavigationProp } from "../../navigation/PostsNavigator";
 import colours from "../../colours";
+import CustomButton from "../../components/CustomButton";
+import useCreatePost from "../../tanstack/mutations/useCreatePost";
+import useAuth from "../../contexts/AuthContext";
 
 const AddNewPostScreen = () => {
   const navigator = useNavigation<PostsNavigationProp>();
+  const [postText, setPostText] = useState("");
+  const { user } = useAuth();
 
   useLayoutEffect(() => {
     navigator.setOptions({
@@ -13,6 +18,8 @@ const AddNewPostScreen = () => {
       headerTitleStyle: { fontFamily: "signature", fontSize: 18 },
     });
   });
+
+  const { isPending, mutate } = useCreatePost();
 
   return (
     <View style={styles.screen}>
@@ -24,6 +31,15 @@ const AddNewPostScreen = () => {
           placeholder="Enter your text here..."
           textAlignVertical="top"
           placeholderTextColor={colours.placeholderText}
+          value={postText}
+          onChangeText={setPostText}
+        />
+        <CustomButton
+          title="Create post"
+          pending={isPending}
+          pendingMessage="Creating post..."
+          onClick={() => mutate({ text: postText, user_id: user?.id! })}
+          disabled={!postText}
         />
       </View>
     </View>

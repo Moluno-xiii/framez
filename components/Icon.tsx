@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { defaultProfilePicture } from "../constants";
 
 const Icon = ({
   imgSrc,
@@ -24,7 +25,7 @@ const Icon = ({
         <Image
           style={isImage && styles.imageStyle}
           alt="icon image"
-          source={{ uri }}
+          source={{ uri: uri ? uri : defaultProfilePicture }}
           height={24}
           width={24}
         />

@@ -1,4 +1,7 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  BottomTabNavigationProp,
+  createBottomTabNavigator,
+} from "@react-navigation/bottom-tabs";
 import SettingsScreen from "../screens/settings/SettingsScreen";
 import Icon from "../components/Icon";
 import iconImages from "../icoin";
@@ -6,12 +9,17 @@ import colours from "../colours";
 import PostsNavigator, { PostsNavigatorParams } from "./PostsNavigator";
 import useImagePicker from "../hooks/useImagePicker";
 import ProfileScreen from "../screens/ProfileScreen";
+import { NavigatorScreenParams } from "@react-navigation/native";
 
 type ProtectedNavigatorParams = {
-  Posts: PostsNavigatorParams;
+  Posts: NavigatorScreenParams<PostsNavigatorParams>;
   Settings: undefined;
   Profile: undefined;
 };
+
+type ProtectedNavigatorNavigationParam =
+  BottomTabNavigationProp<ProtectedNavigatorParams>;
+
 const Tab = createBottomTabNavigator<ProtectedNavigatorParams>();
 
 function ProtectedNavigator() {
@@ -47,5 +55,5 @@ function ProtectedNavigator() {
   );
 }
 
-export type { ProtectedNavigatorParams };
+export type { ProtectedNavigatorParams, ProtectedNavigatorNavigationParam };
 export default ProtectedNavigator;
