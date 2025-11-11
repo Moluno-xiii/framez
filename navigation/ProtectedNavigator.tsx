@@ -11,6 +11,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import SettingsScreen from "../screens/settings/SettingsScreen";
 import useGetUser from "../tanstack/queries/useGetUser";
 import PostsNavigator, { PostsNavigatorParams } from "./PostsNavigator";
+import useAuth from "../contexts/AuthContext";
 
 type ProtectedNavigatorParams = {
   Posts: NavigatorScreenParams<PostsNavigatorParams>;
@@ -24,7 +25,8 @@ type ProtectedNavigatorNavigationParam =
 const Tab = createBottomTabNavigator<ProtectedNavigatorParams>();
 
 function ProtectedNavigator() {
-  const { data, isPending } = useGetUser();
+  const { user } = useAuth();
+  const { data, isPending } = useGetUser(user?.id!);
 
   if (isPending) return <LoadingScreen />;
   return (

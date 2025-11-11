@@ -1,15 +1,19 @@
-import { Alert } from "react-native";
-import supabase from "./supabase";
 import { defaultProfilePicture } from "../constants";
 import { CreateProfile, UserProfileType } from "../types";
+import supabase from "./supabase";
 
-const createProfile = async ({ user_id, display_name }: CreateProfile) => {
+const createProfile = async ({
+  user_id,
+  display_name,
+  email,
+}: CreateProfile) => {
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("profile")
-      .insert([{ user_id, display_name, profile_pic: defaultProfilePicture }]);
+      .insert([
+        { user_id, display_name, profile_pic: defaultProfilePicture, email },
+      ]);
     if (error) throw error;
-    Alert.alert("profile created succesully");
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "unexpected error, try again later";
@@ -21,11 +25,12 @@ const updateUserProfile = async ({
   user_id,
   display_name,
   profile_pic,
+  about_me,
 }: CreateProfile) => {
   try {
     const { error } = await supabase
       .from("profile")
-      .update([{ display_name, profile_pic }])
+      .update([{ display_name, profile_pic, about_me }])
       .eq("user_id", user_id);
 
     if (error) throw error;
@@ -36,7 +41,6 @@ const updateUserProfile = async ({
   }
 };
 
-// const getUserProfile = async (user_id: string): UserProfileType => {
 const getUserProfile = async (user_id: string) => {
   try {
     const { data, error } = await supabase
@@ -53,4 +57,4 @@ const getUserProfile = async (user_id: string) => {
   }
 };
 
-export { createProfile, updateUserProfile, getUserProfile };
+export { createProfile, getUserProfile, updateUserProfile };

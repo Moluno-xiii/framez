@@ -1,18 +1,23 @@
-import { useNavigation } from "@react-navigation/native";
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
-import colours from "../colours";
-import useAuth from "../contexts/AuthContext";
-import { ProtectedNavigatorNavigationParam } from "../navigation/ProtectedNavigator";
-import CustomButton from "./CustomButton";
-import useGetUser from "../tanstack/queries/useGetUser";
-import LoadingScreen from "./LoadingScreen";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { StyleSheet, View, Text, TextInput, Image } from "react-native";
+import { PostsNavigatorParams } from "../../navigation/PostsNavigator";
+import useGetUser from "../../tanstack/queries/useGetUser";
+import LoadingScreen from "../../components/LoadingScreen";
+import ErrorMessage from "../../components/ErrorMessage";
+import colours from "../../colours";
+import useSetPageTitle from "../../hooks/useSetPageTitle";
 
-const UserProfile = () => {
-  const { user } = useAuth();
-  const { data, isPending } = useGetUser(user?.id!);
-  const navigator = useNavigation<ProtectedNavigatorNavigationParam>();
+type CommentAuthorProfileRouteProp = RouteProp<
+  PostsNavigatorParams,
+  "CommentAuthorProfile"
+>;
 
+const CommentAuthorProfile = () => {
+  const { params } = useRoute<CommentAuthorProfileRouteProp>();
+  const { isPending, error, refetch, data } = useGetUser(params.user_id);
+  useSetPageTitle("User details");
   if (isPending) return <LoadingScreen />;
+  if (error) return <ErrorMessage refetch={refetch} message={error.message} />;
 
   return (
     <View style={styles.screen}>
@@ -22,14 +27,14 @@ const UserProfile = () => {
           <TextInput
             style={styles.notEditable}
             editable={false}
-            value={user?.email ?? "not set"}
+            value={data.email}
           />
         </View>
         <View style={styles.formItem}>
           <Text style={styles.title}>Display name</Text>
           <TextInput
             style={styles.notEditable}
-            value={data?.display_name}
+            value={data.display_name ?? "Not yet set"}
             editable={false}
           />
         </View>
@@ -37,7 +42,7 @@ const UserProfile = () => {
           <Text style={styles.title}>About Me</Text>
           <TextInput
             style={styles.notEditable}
-            value={data?.about_me}
+            value={data.about_me ?? "Not yet set"}
             placeholder="Not set yet"
             editable={false}
           />
@@ -50,25 +55,16 @@ const UserProfile = () => {
             <Text style={styles.errorMessage}>No image yet</Text>
           )}
         </View>
-        {!data?.profile_pic && (
-          <CustomButton
-            title="Add profle picture"
-            onClick={() => navigator.navigate("Settings")}
-          />
-        )}
       </View>
-      <CustomButton
-        title="Update profile"
-        onClick={() => navigator.navigate("Settings")}
-      />
     </View>
   );
 };
 
-export default UserProfile;
+export default CommentAuthorProfile;
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colours.darker, padding: 20, gap: 20 },
+  text: { fontFamily: "geist", fontSize: 14, color: colours.light },
   title: { fontFamily: "geist", fontSize: 18, color: colours.light },
   form: {
     gap: 20,

@@ -3,14 +3,16 @@ import { Alert } from "react-native";
 import { updateImage } from "../../utils/supabaseStorageQueries";
 import supabase from "../../utils/supabase";
 import { updateUserProfile } from "../../utils/queryUserProfile";
+import useAuth from "../../contexts/AuthContext";
 
 const useUpdateProfile = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   return useMutation({
     mutationFn: async (data: UpdateProfileData) => await updateProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["user_info"],
+        queryKey: ["user_info", user?.id],
       });
     },
     onError: (err) => {
@@ -26,6 +28,7 @@ type UpdateProfileData = {
   display_name?: string;
   imageBlob?: ArrayBuffer;
   imageUrl?: string;
+  about_me?: string;
 };
 
 const updateProfile = async ({
@@ -33,6 +36,7 @@ const updateProfile = async ({
   imageUrl,
   display_name,
   user_id,
+  about_me,
 }: UpdateProfileData) => {
   try {
     let publicImageUrl;
@@ -61,6 +65,7 @@ const updateProfile = async ({
       user_id: user_id,
       display_name,
       profile_pic: publicImageUrl,
+      about_me,
     });
 
     Alert.alert("Profile updated successfully");

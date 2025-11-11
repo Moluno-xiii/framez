@@ -1,17 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import useAuth from "../../contexts/AuthContext";
 import { UserProfileType } from "../../types";
 import { getUserProfile } from "../../utils/queryUserProfile";
 
-const useGetUser = () => {
-  const { user } = useAuth();
+const useGetUser = (user_id: string) => {
   return useQuery({
-    queryKey: ["user_info"],
+    queryKey: ["user_info", user_id],
     staleTime: Infinity,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     queryFn: async (): Promise<UserProfileType> => {
-      const userProfile = await getUserProfile(user?.id!);
+      const userProfile = await getUserProfile(user_id);
 
       return userProfile;
     },

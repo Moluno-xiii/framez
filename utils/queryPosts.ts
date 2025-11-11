@@ -10,15 +10,37 @@ const getAllPosts = async (): Promise<AllPostsType[]> => {
       .order("created_at", { ascending: false });
     if (postsError) throw postsError;
 
-    console.log("user posts", posts);
     const mergedData = await Promise.all(
       posts.map(async (post) => ({
         ...post,
         authorInfo: await getUserProfile(post.user_id),
       }))
     );
-    console.log("merged data", mergedData);
     return mergedData as AllPostsType[];
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Unexpected error while getting posts, try again.";
+    throw new Error(message);
+  }
+};
+
+const getPostById = async (post_id: string): Promise<AllPostsType> => {
+  try {
+    const { data: posts, error: postsError } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", post_id);
+    if (postsError) throw postsError;
+
+    const mergedData: AllPostsType[] = await Promise.all(
+      posts.map(async (post) => ({
+        ...post,
+        authorInfo: await getUserProfile(post.user_id),
+      }))
+    );
+    return mergedData[0];
   } catch (err: unknown) {
     const message =
       err instanceof Error
@@ -72,4 +94,4 @@ const createPost = async ({ text, user_id, images = [] }: CreatePost) => {
   }
 };
 
-export { createPost, deleteUserPost, getAllPosts, getUsersPosts };
+export { createPost, deleteUserPost, getAllPosts, getUsersPosts, getPostById };

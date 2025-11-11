@@ -2,9 +2,11 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
 import useGetUser from "../tanstack/queries/useGetUser";
+import useAuth from "../contexts/AuthContext";
 
 const useImagePicker = () => {
-  const { data } = useGetUser();
+  const { user } = useAuth();
+  const { data } = useGetUser(user?.id!);
   const [imageBlob, setImageBlob] = useState<ArrayBuffer>();
   const [imageUrl, setImageUrl] = useState(data?.profile_pic);
 

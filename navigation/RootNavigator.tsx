@@ -1,4 +1,3 @@
-// stack navigator with auth, and then, then protected, both of them are bottom tabs
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import {

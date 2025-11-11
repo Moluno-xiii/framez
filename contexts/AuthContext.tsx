@@ -108,7 +108,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (error) throw error;
-      await createProfile({ user_id: data.user?.id!, display_name });
+      await createProfile({ user_id: data.user?.id!, display_name, email });
 
       Alert.alert("Signup successful");
       navigation.navigate("Login");

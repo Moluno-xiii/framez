@@ -1,10 +1,12 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import colours from "../colours";
 
 const LoadingScreen = () => {
   return (
     <View style={styles.emptyStateScreen}>
-      <ActivityIndicator />;
+      <Text>
+        <ActivityIndicator />;
+      </Text>
     </View>
   );
 };
