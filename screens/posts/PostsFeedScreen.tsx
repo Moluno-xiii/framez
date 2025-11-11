@@ -1,15 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import colours from "../../colours";
 import CustomButton from "../../components/CustomButton";
 import ErrorMessage from "../../components/ErrorMessage";
 import Icon from "../../components/Icon";
+import LoadingScreen from "../../components/LoadingScreen";
 import useSetPageTitle from "../../hooks/useSetPageTitle";
 import iconImages from "../../icoin";
 import { PostsNavigationProp } from "../../navigation/PostsNavigator";
@@ -33,12 +28,7 @@ const PostsFeedScreen = () => {
 
   const { data, isPending, error, refetch } = useGetAllPosts();
 
-  if (isPending)
-    return (
-      <View style={styles.emptyStateScreen}>
-        <ActivityIndicator />;
-      </View>
-    );
+  if (isPending) return <LoadingScreen />;
   if (error) return <ErrorMessage message={error.message} refetch={refetch} />;
 
   if (data.length < 1) return <AllPostsEmptyState refetch={refetch} />;
@@ -50,7 +40,7 @@ const PostsFeedScreen = () => {
         data={data}
         renderItem={({ item }) => (
           <View>
-            <Text style={styles.text}>{item.text}</Text>
+            <Text style={styles.text}>{item.created_at}</Text>
           </View>
         )}
       />

@@ -1,3 +1,5 @@
+import { useNavigation } from "@react-navigation/native";
+import { Session, User } from "@supabase/supabase-js";
 import {
   createContext,
   ReactNode,
@@ -5,13 +7,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import { emailRegex } from "../constants";
-import supabase from "../utils/supabase";
-import { useNavigation } from "@react-navigation/native";
-import { RootNavigatorParam } from "../navigation/RootNavigator";
 import { Alert } from "react-native";
-import { Session, User } from "@supabase/supabase-js";
-import { updateImage } from "../utils/supabaseStorageQueries";
+import { emailRegex } from "../constants";
+import { RootNavigatorParam } from "../navigation/RootNavigator";
+import { createProfile } from "../utils/queryUserProfile";
+import supabase from "../utils/supabase";
 
 type AuthContextTypes = {
   user: User | null | undefined;
@@ -25,11 +25,6 @@ type AuthContextTypes = {
   ) => void;
   logout: () => void;
   isLoading: AuthLoadingStates;
-  updateProfile: (
-    display_name?: string,
-    imageBlob?: ArrayBuffer,
-    imageUrl?: string
-  ) => void;
 };
 
 type AuthLoadingStates =
@@ -96,7 +91,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     email,
     password,
     confirmPassword,
-    name
+    display_name
   ) => {
     try {
       setIsLoading("signup");
@@ -107,17 +102,13 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (password !== confirmPassword) {
         throw new Error("Both pasword fields do not match.");
       }
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            display_name: name,
-          },
-        },
       });
 
       if (error) throw error;
+      await createProfile({ user_id: data.user?.id!, display_name });
 
       Alert.alert("Signup successful");
       navigation.navigate("Login");
@@ -139,7 +130,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) throw error;
 
-      Alert.alert("Signout successful");
+      Alert.alert("Logout successful");
       setSession(null);
       setUser(null);
       if (error) throw error;
@@ -154,57 +145,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateProfile: AuthContextTypes["updateProfile"] = async (
-    display_name,
-    imageBlob,
-    imageUrl
-  ) => {
-    try {
-      setIsLoading("updateProfile");
-      let ImgData;
-      let publicImageUrl;
-
-      if (imageBlob && imageUrl) {
-        const imageExtension = imageUrl.split(".").pop();
-        const url = `private/${user?.id}-${Date.now()}.${imageExtension}`;
-
-        const { data, error: imageUploadError } = await updateImage(
-          url,
-          imageBlob
-        );
-        ImgData = data;
-        if (imageUploadError) {
-          throw imageUploadError;
-        }
-
-        if (data) {
-          const { data: publicUrlData } = await supabase.storage
-            .from("user_avatars")
-            .getPublicUrl(data.path);
-          publicImageUrl = publicUrlData.publicUrl;
-        }
-      }
-
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          display_name,
-          imageUrl: publicImageUrl,
-        },
-      });
-
-      if (error) throw error;
-      Alert.alert("Profile updated successfully");
-    } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unexpected error occured while trying to update your profile, please relaunch the app and try again.";
-      Alert.alert(message);
-    } finally {
-      setIsLoading("notLoading");
-    }
-  };
-
   const authReturnValues = {
     user,
     login,
@@ -212,7 +152,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
     isLoading,
     session,
-    updateProfile,
   };
   return (
     <AuthContext.Provider value={authReturnValues}>

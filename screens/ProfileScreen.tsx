@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
   activeStyle: {
     backgroundColor: colours.darker,
     fontFamily: "geist-bold",
-    // fontSize: 14,
   },
   navText: {
     fontSize: 12,

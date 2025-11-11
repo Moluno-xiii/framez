@@ -2,14 +2,18 @@ import { useNavigation } from "@react-navigation/native";
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
 import colours from "../colours";
 import useAuth from "../contexts/AuthContext";
-import useImagePicker from "../hooks/useImagePicker";
 import { ProtectedNavigatorNavigationParam } from "../navigation/ProtectedNavigator";
 import CustomButton from "./CustomButton";
+import useGetUser from "../tanstack/queries/useGetUser";
+import LoadingScreen from "./LoadingScreen";
 
 const UserProfile = () => {
   const { user } = useAuth();
-  const { imageUrl } = useImagePicker();
+  const { data, isPending } = useGetUser();
   const navigator = useNavigation<ProtectedNavigatorNavigationParam>();
+
+  if (isPending) return <LoadingScreen />;
+
   return (
     <View style={styles.screen}>
       <View style={styles.form}>
@@ -25,24 +29,24 @@ const UserProfile = () => {
           <Text style={styles.title}>Display name</Text>
           <TextInput
             style={styles.notEditable}
-            value={user?.user_metadata.display_name}
+            value={data?.display_name}
+            editable={false}
           />
         </View>
         <View style={styles.formItem}>
           <Text style={styles.title}>Profile Picture</Text>
-          {imageUrl ? (
-            <Image
-              source={{ uri: imageUrl }}
-              style={{ height: 200, width: 200, alignSelf: "center" }}
-            />
+          {data?.profile_pic ? (
+            <Image source={{ uri: data.profile_pic }} style={styles.image} />
           ) : (
             <Text style={styles.errorMessage}>No image yet</Text>
           )}
         </View>
-        <CustomButton
-          title="Add profle picture"
-          onClick={() => navigator.navigate("Settings")}
-        />
+        {!data?.profile_pic && (
+          <CustomButton
+            title="Add profle picture"
+            onClick={() => navigator.navigate("Settings")}
+          />
+        )}
       </View>
       <CustomButton
         title="Update profile"
@@ -79,4 +83,12 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   errorMessage: { color: "red", fontFamily: "geist" },
+  image: {
+    height: 200,
+    width: 200,
+    alignSelf: "center",
+    borderWidth: 2,
+    borderColor: colours.link,
+    borderRadius: 8,
+  },
 });

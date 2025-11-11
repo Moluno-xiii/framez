@@ -1,12 +1,12 @@
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import useAuth from "../contexts/AuthContext";
 import { Alert } from "react-native";
+import useGetUser from "../tanstack/queries/useGetUser";
 
 const useImagePicker = () => {
-  const { user } = useAuth();
+  const { data } = useGetUser();
   const [imageBlob, setImageBlob] = useState<ArrayBuffer>();
-  const [imageUrl, setImageUrl] = useState(user?.user_metadata.imageUrl);
+  const [imageUrl, setImageUrl] = useState(data?.profile_pic);
 
   const urlToBlob = async (uri: string) => {
     const response = await fetch(uri);

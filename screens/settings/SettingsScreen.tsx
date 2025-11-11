@@ -6,18 +6,22 @@ import ImagePicker from "../../components/ImagePicker";
 import useAuth from "../../contexts/AuthContext";
 import useImagePicker from "../../hooks/useImagePicker";
 import useSetPageTitle from "../../hooks/useSetPageTitle";
+import useUpdateProfile from "../../tanstack/mutations/useUpdateProfile";
+import useGetUser from "../../tanstack/queries/useGetUser";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const SettingsScreen = () => {
-  const { user, logout, isLoading, updateProfile } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const { imageUrl, pickImage, imageBlob } = useImagePicker();
-  const [displayName, setDisplayName] = useState(
-    user?.user_metadata.display_name
-  );
+  const { data, isPending: loadingUserProfile } = useGetUser();
+  const [displayName, setDisplayName] = useState(data?.display_name);
   useSetPageTitle("Settings");
+  const { isPending, mutate } = useUpdateProfile();
+
+  if (loadingUserProfile) return <LoadingScreen />;
 
   const isSaveChangesButtonDisabled =
-    displayName === user?.user_metadata.display_name &&
-    imageUrl === user?.user_metadata.imageUrl;
+    displayName === data?.display_name && imageUrl === data?.profile_pic;
   return (
     <View style={styles.screen}>
       <View style={styles.form}>
@@ -39,14 +43,21 @@ const SettingsScreen = () => {
         </View>
         <View style={styles.formItem}>
           <Text style={styles.title}>Profile Picture</Text>
-          <ImagePicker imageUrl={imageUrl} pickImage={pickImage} />
+          <ImagePicker imageUrl={imageUrl!} pickImage={pickImage} />
         </View>
         <CustomButton
           title="Save Changes"
           disabled={isSaveChangesButtonDisabled}
-          pending={isLoading === "updateProfile"}
+          pending={isPending}
           pendingMessage="Updating your profile..."
-          onClick={() => updateProfile(displayName, imageBlob, imageUrl)}
+          onClick={() =>
+            mutate({
+              user_id: user?.id!,
+              imageBlob,
+              imageUrl,
+              display_name: displayName,
+            })
+          }
         />
       </View>
       <CustomButton

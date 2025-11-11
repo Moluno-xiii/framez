@@ -13,7 +13,7 @@ const useCreatePost = () => {
   return useMutation({
     mutationFn: async (data: CreatePost) => await createPost(data),
     onSuccess: () => {
-      Alert.alert("Mutation crate post successful");
+      Alert.alert("Post created successfully");
       queryClient.invalidateQueries({
         queryKey: ["all_posts"],
       });

@@ -1,14 +1,24 @@
-import { CreatePost } from "../types";
+import { AllPostsType, CreatePost } from "../types";
+import { getUserProfile } from "./queryUserProfile";
 import supabase from "./supabase";
 
-const getAllPosts = async <T>(): Promise<T> => {
+const getAllPosts = async (): Promise<AllPostsType[]> => {
   try {
-    const { data: posts, error } = await supabase
+    const { data: posts, error: postsError } = await supabase
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false });
-    if (error) throw error;
-    return posts as T;
+    if (postsError) throw postsError;
+
+    console.log("user posts", posts);
+    const mergedData = await Promise.all(
+      posts.map(async (post) => ({
+        ...post,
+        authorInfo: await getUserProfile(post.user_id),
+      }))
+    );
+    console.log("merged data", mergedData);
+    return mergedData as AllPostsType[];
   } catch (err: unknown) {
     const message =
       err instanceof Error

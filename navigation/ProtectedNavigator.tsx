@@ -2,14 +2,15 @@ import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
 } from "@react-navigation/bottom-tabs";
-import SettingsScreen from "../screens/settings/SettingsScreen";
-import Icon from "../components/Icon";
-import iconImages from "../icoin";
-import colours from "../colours";
-import PostsNavigator, { PostsNavigatorParams } from "./PostsNavigator";
-import useImagePicker from "../hooks/useImagePicker";
-import ProfileScreen from "../screens/ProfileScreen";
 import { NavigatorScreenParams } from "@react-navigation/native";
+import colours from "../colours";
+import Icon from "../components/Icon";
+import LoadingScreen from "../components/LoadingScreen";
+import iconImages from "../icoin";
+import ProfileScreen from "../screens/ProfileScreen";
+import SettingsScreen from "../screens/settings/SettingsScreen";
+import useGetUser from "../tanstack/queries/useGetUser";
+import PostsNavigator, { PostsNavigatorParams } from "./PostsNavigator";
 
 type ProtectedNavigatorParams = {
   Posts: NavigatorScreenParams<PostsNavigatorParams>;
@@ -23,7 +24,9 @@ type ProtectedNavigatorNavigationParam =
 const Tab = createBottomTabNavigator<ProtectedNavigatorParams>();
 
 function ProtectedNavigator() {
-  const { imageUrl } = useImagePicker();
+  const { data, isPending } = useGetUser();
+
+  if (isPending) return <LoadingScreen />;
   return (
     <Tab.Navigator
       screenOptions={{
@@ -44,7 +47,9 @@ function ProtectedNavigator() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{ tabBarIcon: () => <Icon uri={imageUrl} isImage={true} /> }}
+        options={{
+          tabBarIcon: () => <Icon uri={data?.profile_pic} isImage={true} />,
+        }}
       />
       <Tab.Screen
         name="Settings"
@@ -55,5 +60,5 @@ function ProtectedNavigator() {
   );
 }
 
-export type { ProtectedNavigatorParams, ProtectedNavigatorNavigationParam };
+export type { ProtectedNavigatorNavigationParam, ProtectedNavigatorParams };
 export default ProtectedNavigator;
