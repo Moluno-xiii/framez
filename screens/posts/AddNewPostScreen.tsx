@@ -1,17 +1,25 @@
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { PostsNavigationProp } from "../../navigation/PostsNavigator";
 import colours from "../../colours";
 import CustomButton from "../../components/CustomButton";
-import useCreatePost from "../../tanstack/mutations/useCreatePost";
+import PostImagePicker from "../../components/PickPostImage";
 import useAuth from "../../contexts/AuthContext";
+import { PostsNavigationProp } from "../../navigation/PostsNavigator";
+import useCreatePost from "../../tanstack/mutations/useCreatePost";
 
 const AddNewPostScreen = () => {
   const navigator = useNavigation<PostsNavigationProp>();
   const [postText, setPostText] = useState("");
-  const { user } = useAuth();
+  const [imageDetails, setImageDetails] = useState<
+    | {
+        url: string;
+        imageBlob: ArrayBuffer;
+      }
+    | undefined
+  >();
 
+  const { user } = useAuth();
   useLayoutEffect(() => {
     navigator.setOptions({
       headerTitle: "Create new post",
@@ -34,11 +42,19 @@ const AddNewPostScreen = () => {
           value={postText}
           onChangeText={setPostText}
         />
+        <Text style={styles.text}>Add Image (optional)</Text>
+
+        <PostImagePicker
+          imageDetails={imageDetails}
+          setImageDetails={setImageDetails}
+        />
         <CustomButton
           title="Create post"
           pending={isPending}
           pendingMessage="Creating post..."
-          onClick={() => mutate({ text: postText, user_id: user?.id! })}
+          onClick={() =>
+            mutate({ text: postText, user_id: user?.id!, imageDetails })
+          }
           disabled={!postText}
         />
       </View>
@@ -47,9 +63,15 @@ const AddNewPostScreen = () => {
 };
 
 export default AddNewPostScreen;
+// /home/gior / Android / Sdk;
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colours.darker, padding: 20, gap: 20 },
+  text: {
+    fontFamily: "geist",
+    fontSize: 14,
+    color: colours.light,
+  },
   title: { fontFamily: "geist", fontSize: 20, color: colours.light },
   textarea: {
     height: 100,

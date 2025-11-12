@@ -1,5 +1,14 @@
 import { useNavigation } from "@react-navigation/native";
-import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import colours from "../../colours";
 import CustomButton from "../../components/CustomButton";
 import ErrorMessage from "../../components/ErrorMessage";
@@ -10,6 +19,7 @@ import iconImages from "../../icoin";
 import { PostsNavigationProp } from "../../navigation/PostsNavigator";
 import useGetAllPosts from "../../tanstack/queries/useGetAllPosts";
 import useRefreshOnFocus from "../../tanstack/queries/useRefetchOnFocus";
+import formatDateDsitance from "../../utils/formateDateDistance";
 
 const PostsFeedScreen = () => {
   const navigator = useNavigation<PostsNavigationProp>();
@@ -46,21 +56,41 @@ const PostsFeedScreen = () => {
       renderItem={({ item }) => (
         <View style={styles.container}>
           <View style={styles.row}>
-            <Text style={styles.text}>
-              {item.authorInfo.display_name ?? item.authorInfo.email}
-            </Text>
+            <Pressable
+              onPress={() =>
+                navigator.navigate("CommentAuthorProfile", {
+                  user_id: item.user_id,
+                })
+              }
+            >
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+              >
+                <Image
+                  style={{ height: 24, width: 24, borderRadius: 100 }}
+                  source={{ uri: item.authorInfo.profile_pic }}
+                />
+                <Text style={styles.title}>
+                  {item.authorInfo.display_name ?? item.authorInfo.email}
+                </Text>
+              </View>
+            </Pressable>
             <Text style={styles.timestamp}>
-              {item.created_at.split("T")[0]},{" "}
-              {item.created_at.split("T")[1].split(".")[0]}
+              {formatDateDsitance(item.created_at)}
             </Text>
           </View>
-          <Text style={styles.title}>{item.text}</Text>
-          <CustomButton
-            onClick={() =>
+          <Text style={styles.text}>{item.text}</Text>
+          {item.images?.length ? (
+            <Image source={{ uri: item.images[0] }} style={styles.image} />
+          ) : null}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() =>
               navigator.navigate("PostDetails", { post_Id: item.id })
             }
-            title="Check post details"
-          />
+          >
+            <Text style={styles.text}>View Post</Text>
+          </TouchableOpacity>
         </View>
       )}
       refreshControl={
@@ -85,23 +115,37 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 10,
   },
+  button: {
+    backgroundColor: colours.darker,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 9,
+    alignSelf: "flex-end",
+  },
+  image: {
+    height: 400,
+    width: "auto",
+    borderRadius: 7,
+    borderColor: colours.darker,
+  },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+
+  timestamp: {
+    color: colours.link,
+    fontFamily: "signature",
+    fontSize: 12,
   },
   text: {
     fontFamily: "geist",
     fontSize: 14,
     color: colours.light,
   },
-  timestamp: {
-    color: colours.link,
-    fontFamily: "signature",
-    fontSize: 12,
-  },
   title: {
-    fontFamily: "geist",
+    fontFamily: "geist-bold",
     fontSize: 16,
     color: colours.light,
   },

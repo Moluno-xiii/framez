@@ -48,7 +48,13 @@ type PostComment = {
 };
 type AllPostsType = PostType & { authorInfo: UserProfileType };
 
-type IconNames = "fingerprint" | "signup" | "settings" | "posts" | "add-circle";
+type IconNames =
+  | "fingerprint"
+  | "signup"
+  | "settings"
+  | "posts"
+  | "add-circle"
+  | "arrow-back";
 
 export {
   PostType,

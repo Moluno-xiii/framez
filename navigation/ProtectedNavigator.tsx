@@ -36,6 +36,7 @@ function ProtectedNavigator() {
         headerTintColor: colours.light,
         tabBarStyle: { backgroundColor: colours.dark },
         tabBarActiveTintColor: colours.link,
+        tabBarActiveBackgroundColor: "#111111",
       }}
     >
       <Tab.Screen

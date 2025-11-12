@@ -7,6 +7,7 @@ const iconImages: Record<IconNames, ImageSourcePropType> = {
   settings: require("./assets/settings-icon.png"),
   posts: require("./assets/posts-icon.png"),
   "add-circle": require("./assets/add-circle_icon.png"),
+  "arrow-back": require("./assets/arrow-back_icon.png"),
 };
 
 export default iconImages;

@@ -2,8 +2,11 @@ import { useNavigation } from "@react-navigation/native";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
+  RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import colours from "../colours";
@@ -11,9 +14,13 @@ import { ProtectedNavigatorNavigationParam } from "../navigation/ProtectedNaviga
 import useGetUserPosts from "../tanstack/queries/useGetUserPosts";
 import CustomButton from "./CustomButton";
 import ErrorMessage from "./ErrorMessage";
+import formatDateDsitance from "../utils/formateDateDistance";
+// import useGetUser from "../tanstack/queries/useGetUser";
 
 const UserPosts = () => {
-  const { data, isPending, error, refetch } = useGetUserPosts();
+  const { data, isPending, error, refetch, isRefetching } = useGetUserPosts();
+  // const { data: userData } = useGetUser();
+  const navigator = useNavigation<ProtectedNavigatorNavigationParam>();
 
   if (isPending) return <ActivityIndicator />;
   if (error) return <ErrorMessage message={error.message} refetch={refetch} />;
@@ -21,20 +28,56 @@ const UserPosts = () => {
   if (data.length < 1) return <UserPostsEmptyState />;
   return (
     <View style={styles.screen}>
-      <Text style={styles.text}>UserPosts {data.length}</Text>
+      <Text style={styles.title}>My Posts ({data.length})</Text>
       <FlatList
         data={data}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{
+          backgroundColor: colours.darker,
+          gap: 20,
+          // paddingBottom: 30,
+          flexGrow: 1,
+        }}
         renderItem={({ item }) => (
-          <View>
+          <View style={styles.container}>
+            <View style={styles.row}>
+              <Text style={styles.timestamp}>
+                {formatDateDsitance(item.created_at)}
+              </Text>
+            </View>
             <Text style={styles.text}>{item.text}</Text>
+            {item.images?.length ? (
+              <Image source={{ uri: item.images[0] }} style={styles.image} />
+            ) : null}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() =>
+                navigator.navigate("Posts", {
+                  screen: "PostDetails",
+                  params: { post_Id: item.id },
+                })
+              }
+            >
+              <Text style={styles.text}>View Post</Text>
+            </TouchableOpacity>
           </View>
         )}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={colours.link}
+            colors={[colours.link]}
+            progressBackgroundColor={colours.darker}
+          />
+        }
       />
     </View>
   );
 };
 
 export default UserPosts;
+// you know i love you like
 
 const UserPostsEmptyState = () => {
   const navigator = useNavigation<ProtectedNavigatorNavigationParam>();
@@ -55,7 +98,7 @@ const UserPostsEmptyState = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colours.darker, padding: 20, gap: 20 },
+  screen: { gap: 20, paddingBottom: 100 },
   text: { fontFamily: "geist", fontSize: 14, color: colours.light },
   title: { fontFamily: "geist", fontSize: 20, color: colours.light },
   emptyStateScreen: {
@@ -64,5 +107,35 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 20,
+  },
+  container: {
+    backgroundColor: colours.dark,
+    borderRadius: 12,
+    padding: 16,
+    // padding: 10,
+    gap: 10,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  button: {
+    backgroundColor: colours.darker,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 9,
+    alignSelf: "flex-end",
+  },
+  timestamp: {
+    color: colours.link,
+    fontFamily: "signature",
+    fontSize: 12,
+  },
+  image: {
+    height: 400,
+    width: "auto",
+    borderRadius: 7,
+    borderColor: colours.darker,
   },
 });
