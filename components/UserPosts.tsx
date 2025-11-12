@@ -15,11 +15,9 @@ import useGetUserPosts from "../tanstack/queries/useGetUserPosts";
 import CustomButton from "./CustomButton";
 import ErrorMessage from "./ErrorMessage";
 import formatDateDsitance from "../utils/formateDateDistance";
-// import useGetUser from "../tanstack/queries/useGetUser";
 
 const UserPosts = () => {
   const { data, isPending, error, refetch, isRefetching } = useGetUserPosts();
-  // const { data: userData } = useGetUser();
   const navigator = useNavigation<ProtectedNavigatorNavigationParam>();
 
   if (isPending) return <ActivityIndicator />;
@@ -35,7 +33,6 @@ const UserPosts = () => {
         contentContainerStyle={{
           backgroundColor: colours.darker,
           gap: 20,
-          // paddingBottom: 30,
           flexGrow: 1,
         }}
         renderItem={({ item }) => (
@@ -77,7 +74,6 @@ const UserPosts = () => {
 };
 
 export default UserPosts;
-// you know i love you like
 
 const UserPostsEmptyState = () => {
   const navigator = useNavigation<ProtectedNavigatorNavigationParam>();
@@ -98,7 +94,13 @@ const UserPostsEmptyState = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { gap: 20, paddingBottom: 100 },
+  screen: {
+    gap: 20,
+    paddingBottom: 100,
+    maxWidth: 700,
+    alignSelf: "center",
+    width: "100%",
+  },
   text: { fontFamily: "geist", fontSize: 14, color: colours.light },
   title: { fontFamily: "geist", fontSize: 20, color: colours.light },
   emptyStateScreen: {
@@ -112,7 +114,6 @@ const styles = StyleSheet.create({
     backgroundColor: colours.dark,
     borderRadius: 12,
     padding: 16,
-    // padding: 10,
     gap: 10,
   },
   row: {

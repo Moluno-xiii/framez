@@ -1,11 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { View } from "react-native";
 import colours from "../colours";
 import Icon from "../components/Icon";
 import iconImages from "../icoin";
 import LoginScreen from "../screens/auth/LoginScreen";
 import SignupScreen from "../screens/auth/SignupScreen";
-import { View } from "react-native";
 
 type AuthTabParamList = {
   Login: undefined;
@@ -21,6 +20,7 @@ function AuthNavigator() {
         headerShown: false,
         tabBarStyle: { backgroundColor: colours.dark },
         tabBarActiveTintColor: colours.link,
+        tabBarActiveBackgroundColor: colours.darker,
       }}
     >
       <Tab.Screen

@@ -32,42 +32,44 @@ const PostDetailsScreen = () => {
   if (isPending) return <LoadingScreen />;
   if (error) return <ErrorMessage message={error.message} refetch={refetch} />;
   return (
-    <View style={styles.screen}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-        <Pressable
-          onPress={() =>
-            navigator.navigate("CommentAuthorProfile", {
-              user_id: data.user_id,
-            })
-          }
-        >
-          <Image
-            style={{ height: 24, width: 24, borderRadius: 100 }}
-            source={{ uri: data.authorInfo.profile_pic }}
-          />
-        </Pressable>
-        <Text style={styles.title}>
-          {data.authorInfo.display_name ?? data.authorInfo.email}
-        </Text>
-        <Text
-          style={{
-            ...styles.text,
-            flex: 1,
-            alignSelf: "flex-end",
-            color: colours.link,
-            textAlign: "right",
-          }}
-        >
-          {formatDateDsitance(data.created_at)}
-        </Text>
+    <View style={{ backgroundColor: colours.darker, padding: 20, flex: 1 }}>
+      <View style={styles.screen}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <Pressable
+            onPress={() =>
+              navigator.navigate("CommentAuthorProfile", {
+                user_id: data.user_id,
+              })
+            }
+          >
+            <Image
+              style={{ height: 24, width: 24, borderRadius: 100 }}
+              source={{ uri: data.authorInfo.profile_pic }}
+            />
+          </Pressable>
+          <Text style={styles.title}>
+            {data.authorInfo.display_name ?? data.authorInfo.email}
+          </Text>
+          <Text
+            style={{
+              ...styles.text,
+              flex: 1,
+              alignSelf: "flex-end",
+              color: colours.link,
+              textAlign: "right",
+            }}
+          >
+            {formatDateDsitance(data.created_at)}
+          </Text>
+        </View>
+        <Text style={styles.text}>{data.text}</Text>
+        {data.images?.length ? (
+          <Image source={{ uri: data.images[0] }} style={styles.image} />
+        ) : null}
+        <Suspense fallback={<LoadingScreen />}>
+          <PostComments post_id={route.params.post_Id!} />
+        </Suspense>
       </View>
-      <Text style={styles.text}>{data.text}</Text>
-      {data.images?.length ? (
-        <Image source={{ uri: data.images[0] }} style={styles.image} />
-      ) : null}
-      <Suspense fallback={<LoadingScreen />}>
-        <PostComments post_id={route.params.post_Id!} />
-      </Suspense>
     </View>
   );
 };
@@ -81,6 +83,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     gap: 20,
+    maxWidth: 700,
+    alignSelf: "center",
+    width: "100%",
   },
   text: { fontFamily: "geist", fontSize: 14, color: colours.light },
   title: { fontFamily: "geist", fontSize: 20, color: colours.light },
@@ -95,6 +100,5 @@ const styles = StyleSheet.create({
     height: 300,
     width: "auto",
     borderWidth: 2,
-    // borderColor: colours.darker,
   },
 });

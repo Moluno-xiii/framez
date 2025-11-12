@@ -16,7 +16,6 @@ const PostImagePicker = ({
   const urlToBlob = async (uri: string) => {
     const response = await fetch(uri);
     const blob = await response.arrayBuffer();
-    // setImageDetails(blob);
     return blob;
   };
 
@@ -36,7 +35,6 @@ const PostImagePicker = ({
         return;
       }
       const blob = await urlToBlob(image.uri);
-      //   setImageUrl(image.uri);
       setImageDetails({ imageBlob: blob, url: image.uri });
       return image;
     }

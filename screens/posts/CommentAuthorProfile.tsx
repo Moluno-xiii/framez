@@ -1,5 +1,12 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { StyleSheet, View, Text, TextInput, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Image,
+  ScrollView,
+} from "react-native";
 import { PostsNavigatorParams } from "../../navigation/PostsNavigator";
 import useGetUser from "../../tanstack/queries/useGetUser";
 import LoadingScreen from "../../components/LoadingScreen";
@@ -20,7 +27,15 @@ const CommentAuthorProfile = () => {
   if (error) return <ErrorMessage refetch={refetch} message={error.message} />;
 
   return (
-    <View style={styles.screen}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={{
+        paddingBottom: 30,
+        maxWidth: 700,
+        alignSelf: "center",
+        width: "100%",
+      }}
+    >
       <View style={styles.form}>
         <View style={styles.formItem}>
           <Text style={styles.title}>Email</Text>
@@ -56,7 +71,7 @@ const CommentAuthorProfile = () => {
           )}
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

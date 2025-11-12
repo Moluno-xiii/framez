@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import colours from "../../colours";
 import CustomButton from "../../components/CustomButton";
 import PostImagePicker from "../../components/PickPostImage";
@@ -30,7 +30,15 @@ const AddNewPostScreen = () => {
   const { isPending, mutate } = useCreatePost();
 
   return (
-    <View style={styles.screen}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={{
+        paddingBottom: 30,
+        maxWidth: 700,
+        alignSelf: "center",
+        width: "100%",
+      }}
+    >
       <Text style={styles.title}>Add new Post</Text>
       <View style={styles.form}>
         <TextInput
@@ -58,12 +66,11 @@ const AddNewPostScreen = () => {
           disabled={!postText}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 export default AddNewPostScreen;
-// /home/gior / Android / Sdk;
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colours.darker, padding: 20, gap: 20 },
@@ -84,5 +91,6 @@ const styles = StyleSheet.create({
   form: {
     gap: 20,
     flexDirection: "column",
+    marginTop: 20,
   },
 });

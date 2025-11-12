@@ -1,5 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import colours from "../colours";
 import useAuth from "../contexts/AuthContext";
 import { ProtectedNavigatorNavigationParam } from "../navigation/ProtectedNavigator";
@@ -15,7 +22,10 @@ const UserProfile = () => {
   if (isPending) return <LoadingScreen />;
 
   return (
-    <View style={styles.screen}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       <View style={styles.form}>
         <View style={styles.formItem}>
           <Text style={styles.title}>Email</Text>
@@ -61,20 +71,29 @@ const UserProfile = () => {
         title="Update profile"
         onClick={() => navigator.navigate("Settings")}
       />
-    </View>
+    </ScrollView>
   );
 };
 
 export default UserProfile;
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colours.darker, padding: 20, gap: 20 },
+  screen: {
+    flex: 1,
+    backgroundColor: colours.darker,
+    padding: 20,
+    gap: 20,
+    maxWidth: 700,
+    alignSelf: "center",
+    width: "100%",
+  },
   title: { fontFamily: "geist", fontSize: 18, color: colours.light },
   form: {
     gap: 20,
     flexDirection: "column",
     display: "flex",
     flex: 1,
+    marginBottom: 20,
   },
   formItem: {
     gap: 5,

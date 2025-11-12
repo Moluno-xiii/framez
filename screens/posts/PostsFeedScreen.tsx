@@ -45,6 +45,7 @@ const PostsFeedScreen = () => {
   return (
     <FlatList
       data={data}
+      style={{ backgroundColor: colours.darker }}
       keyExtractor={(item) => item.id}
       contentContainerStyle={{
         backgroundColor: colours.darker,
@@ -52,6 +53,9 @@ const PostsFeedScreen = () => {
         gap: 20,
         paddingBottom: 30,
         flexGrow: 1,
+        maxWidth: 700,
+        alignSelf: "center",
+        width: "100%",
       }}
       renderItem={({ item }) => (
         <View style={styles.container}>

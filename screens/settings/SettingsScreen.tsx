@@ -106,6 +106,9 @@ const styles = StyleSheet.create({
     display: "flex",
     flex: 1,
     marginBottom: 40,
+    maxWidth: 700,
+    alignSelf: "center",
+    width: "100%",
   },
   formItem: {
     gap: 5,

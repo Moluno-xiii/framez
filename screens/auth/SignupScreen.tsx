@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import colours from "../../colours";
 import CustomButton from "../../components/CustomButton";
 import useAuth from "../../contexts/AuthContext";
@@ -12,7 +12,14 @@ const SignupScreen = () => {
   const { signup, isLoading } = useAuth();
 
   return (
-    <View style={styles.screen}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={{
+        justifyContent: "center",
+        paddingVertical: 30,
+        flex: 1,
+      }}
+    >
       <Text style={styles.title}>SignUp</Text>
       <View style={styles.form}>
         <TextInput
@@ -56,7 +63,7 @@ const SignupScreen = () => {
         onClick={() => signup(email, password, confirmPassword, displayName)}
         pendingMessage="Signing up..."
       />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -68,7 +75,6 @@ const styles = StyleSheet.create({
     backgroundColor: colours.darker,
     paddingHorizontal: 10,
     flexDirection: "column",
-    justifyContent: "center",
   },
   textInput: {
     paddingHorizontal: 20,
@@ -89,6 +95,9 @@ const styles = StyleSheet.create({
     gap: 20,
     marginTop: 20,
     marginBottom: 40,
+    maxWidth: 500,
+    alignSelf: "center",
+    width: "100%",
   },
   title: {
     color: colours.light,

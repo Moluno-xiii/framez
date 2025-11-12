@@ -11,6 +11,16 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.screen}>
+      <Text
+        style={{
+          ...styles.title,
+          marginBottom: 20,
+          textAlign: "center",
+          fontSize: 27,
+        }}
+      >
+        Welcome to Framez, the best social media platform{" "}
+      </Text>
       <Text style={styles.title}>Login</Text>
       <View style={styles.form}>
         <TextInput
@@ -69,6 +79,9 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 20,
     marginVertical: 20,
+    maxWidth: 500,
+    width: "100%",
+    alignSelf: "center",
   },
   title: {
     color: colours.light,

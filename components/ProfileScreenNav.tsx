@@ -39,6 +39,9 @@ const styles = StyleSheet.create({
     gap: 5,
     flexDirection: "row",
     justifyContent: "space-around",
+    alignSelf: "center",
+    maxWidth: 700,
+    width: "100%",
   },
   navItem: {
     color: colours.lighter,
@@ -49,7 +52,6 @@ const styles = StyleSheet.create({
   activeStyle: {
     backgroundColor: colours.darker,
     fontFamily: "geist-bold",
-    // fontSize: 14,
   },
   navText: {
     fontSize: 12,
